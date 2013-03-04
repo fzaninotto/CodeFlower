@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <!-- Use the Source, Luke -->
+  <head>
+    <title>CodeFlower Source code visualization</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link type="text/css" rel="stylesheet" href="stylesheets/bootstrap.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Rosario:400,700' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css"/>
+    <style type="text/css">
+circle.node {
+  cursor: pointer;
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+circle.node.directory {
+  stroke: #9ecae1;
+  stroke-width: 2px;
+}
+
+circle.node.collapsed {
+  stroke: #555;
+}
+
+.nodetext {
+  fill: #252929;
+  font-weight: bold;
+  text-shadow: 0 0 0.2em white;
+}
+
+line.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class="container">
+        <h1>CodeFlower Source code visualization</h1>
+        <p class="lead">This experiment visualizes source repositories using an interactive tree. Each disc represents a file, with a radius proportional to the number of lines of code (loc). All rendering is done client-side, in JavaScript. Try hovering on nodes to see the loc number, clicking on directory nodes to fold them, dragging nodes to rearrange the layout, and changing project to see different tree structures. Built with <a href="https://github.com/mbostock/d3">d3.js</a>. Inspired by <a href="https://code.google.com/p/codeswarm/">Code Swarm</a> and <a href="https://code.google.com/p/gource/">Gource</a>.</p>
+        <form class="form-inline">
+          <fieldset>
+          <label>Example projects from GitHub:</label>
+          <select id="project">
+            <option value="data/uptime.json">fzaninotto / uptime</option>
+            <option value="data/faker.json">fzaninotto / faker</option>
+            <option value="data/jquery.json">jquery / jquery</option>
+            <option value="data/twig.json">fabpot / twig</option>
+            <option value="data/lichess.json">ornicar / lila</option>
+            <option value="data/propel2.json">propelorm / Propel2</option>
+            <option value="data/doctrine2.json">doctrine / doctrine2</option>
+            <option value="data/wordpress.json">WordPress / WordPress</option>
+            <option value="data/rails.json">rails / rails</option>
+            <option value="data/symfony.json">symfony / symfony (WARNING: will make your computer scream)</option>
+            <option value="data/zf2.json">zendframework / zf2 (WARNING: will make your computer scream
+          </select>
+          </fieldset>
+        </form>
+        <div id="visualization"></div>
+        <h2>Purpose</h2>
+        <ul class="unstyled">
+          <li>Did you ever dive into an existing project and wish you could have a bird's eye view of the whole code?</li>
+          <li>Did you ever have to refactor a large application and wish you knew where to start?</li>
+          <li>Did you ever look for a visualization that would help you communicate visually with your teammates about a repository?</li>
+        </ul>
+        <p>CodeFlowers tries to answer these needs. Also, it tries to make code look beautiful, but that's another story.</p>
+        <h2>Usage</h2>
+        <p>To create a CodeFlower, include the <code>CodeFlower.js</code> file together with <code>d3.js</code>, just like in this page. Create a new CodeFlower instance using a CSS selector (of the div where the flower should be inserted), and the width and height of the desired visualization. Then, bind JSON data to the flower using <code>CodeFlower.update()</code>, and you're done.</p>
+        <pre>
+var myFlower = new CodeFlower("#visualization", 300, 200);
+myflower.update(jsonData);
+        </pre>
+        <h2>Input data format</h2>
+        <p>The <code>jsonData</code> format taken as input to <code>update()</code> is extremely simple. It's a JavaScript object representing a file tree structure. Each node must have a <code>name</code> (the file or directory name), leaf nodes must have a <code>size</code> (the number of lines of code or the file), and directory nodes must have a <code>children</code> property containing an array of nodes. As an example, here is the input for the currently displayed CodeFlower. You can modify it at will and click the update button to see the effect of your changes on the CodeFlower.</p>
+        <form id="jsonInput">
+        <fieldset>
+          <textarea id="jsonData"></textarea>
+          <div class="pull-right">
+            <button type="submit" class="btn btn-primary btn-large">Update</button>
+          </div>
+        </fieldset>
+        </form>
+        <h2>Generating JSON for a project</h2>
+        <p>It's easy to generate loc metrics for any project, whatever the language. You can use <code>wc</code>, but this method requires cleaning the output and counts comments and blanks together with actual lines of code. Alternatively, you can use <code>cloc</code> (<a href="http://cloc.sourceforge.net/">http://cloc.sourceforge.net/</a>), which is open-source and makes the difference between real source code and comments. Here are three examples using <a href="http://github.com">GitHub</a> as a source.</p>
+        <pre>
+# Using curl and cloc (fast, accurate)
+$ curl https://nodeload.github.com/symfony/symfony/tar.gz/master | tar xvz
+$ cloc symfony-master --csv --by-file --report-file=symfony.cloc
+
+# Using git clone and cloc (slow, accurate)
+$ git clone git://github.com/symfony/symfony.git
+$ cloc symfony --csv --by-file --report-file=symfony.cloc
+
+# Using git clone and wc (slow, inaccurate)
+$ git clone git://github.com/symfony/symfony.git
+$ cd symfony
+$ git ls-files | xargs wc -l > symfony.wc
+        </pre>
+        <p>Once you have a loc metrics file, paste its content below and click on the convert button. This will update the CodeFlower and the JSON textarea, to let you save data for your own CodeFlowers.</p>
+        <form id="jsonConverter">
+        <fieldset>
+          <select name="origin">
+            <option value="cloc" selected>Origin: cloc</option>
+            <option value="ws">Origin: wc</option>
+          </select>
+          <textarea id="metricsData"></textarea>
+          <div class="pull-right">
+            <button type="submit" class="btn btn-primary btn-large">Convert</button>
+          </div>
+        </fieldset>
+        </form>
+        <h2>Sharing your CodeFlowers</h2>
+        <p>The best way to share your CodeFlowers is to use <a href="http://pages.github.com/">GitHub Pages</a>, just like this very page. So just fork the <a href="https://github.com/fzaninotto/CodeFlower"><code>fzaninotto/CodeFlower</code></a> repository, add your own JSON data under the <code>data</code> directory, update the options of the dropdown list in the <code>index.html</code> file accordingly, commit the code, and push to the <code>gh-pages</code> branch. GitHub will publish the result for you.</p>
+        <h2>Licence</h2>
+        <p>All this work is open-source, published by <a href="https://twitter.com/francoisz">François Zaninotto</a> under the MIT license. That means that nothing prevents you from growing as many CodeFlowers as you want!</p>
+        <a href="https://github.com/fzaninotto/CodeFlower"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+      </div>
+    </div>
+    <script type="text/javascript" src="javascripts/d3/d3.js"></script>
+    <script type="text/javascript" src="javascripts/d3/d3.geom.js"></script>
+    <script type="text/javascript" src="javascripts/d3/d3.layout.js"></script>
+    <script type="text/javascript" src="javascripts/CodeFlower.js"></script>
+    <script type="text/javascript" src="javascripts/dataConverter.js"></script>
+    <script type="text/javascript">
+      var currentCodeFlower;
+      var createCodeFlower = function(json) {
+        // update the jsonData textarea
+        document.getElementById('jsonData').value = JSON.stringify(json);
+        // remove previous flower to save memory
+        if (currentCodeFlower) currentCodeFlower.cleanup();
+        // adapt layout size to the total number of elements
+        var total = countElements(json);
+        w = parseInt(Math.sqrt(total) * 30, 10);
+        h = parseInt(Math.sqrt(total) * 30, 10);
+        // create a new CodeFlower
+        currentCodeFlower = new CodeFlower("#visualization", w, h).update(json);
+      };
+
+      d3.json('data.json', createCodeFlower);
+
+      document.getElementById('project').addEventListener('change', function() {
+        d3.json(this.value, createCodeFlower);
+      });
+      document.getElementById('jsonInput').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('visualization').scrollIntoView();
+        var json = JSON.parse(document.getElementById('jsonData').value);
+        currentCodeFlower.update(json);
+      });
+      document.getElementById('jsonConverter').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var origin = this.children[0].children[0].value;
+        var data = this.children[0].children[1].value;
+        var json = convertToJSON(data, origin);
+        document.getElementById('visualization').scrollIntoView();
+        createCodeFlower(json);
+      });
+    </script>
+  </body>
+</html>

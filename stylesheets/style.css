@@ -1,0 +1,20 @@
+body {
+  font-family: 'Rosario', sans-serif;
+}
+
+#visualization {
+  overflow: auto;
+}
+
+h1 {
+  font-size: 62px;
+  font-weight: 300;
+  letter-spacing: -2px;
+  line-height: 1em;
+  margin: 1em 0;
+}
+
+textarea {
+  width: 98%;
+  height: 200px;
+}
