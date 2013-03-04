@@ -5,7 +5,7 @@ This experiment visualizes source repositories using an interactive tree. Each d
 
 Interact with CodeFlowers, see examples, and build your own at [http://fzaninotto.github.com/CodeFlower](http://fzaninotto.github.com/CodeFlower).
 
-* ![fzaninotto/uptime](./images/uptime.png)
-* ![fzaninotto/faker](./images/faker.png)
-* ![jquery/jquery](./images/jquery.png)
-* ![fabpot/twig](./images/twig.png)
+![fzaninotto/uptime](./images/uptime.png)
+![fzaninotto/faker](./images/faker.png)
+![jquery/jquery](./images/jquery.png)
+![fabpot/twig](./images/twig.png)
