@@ -6,6 +6,15 @@ body {
   overflow: auto;
 }
 
+#visualization,
+#visualization svg {
+  background: transparent;
+}
+
+#visualization svg rect {
+  fill: rgba(255, 255, 255, 1);
+}
+
 h1 {
   font-size: 62px;
   font-weight: 300;
