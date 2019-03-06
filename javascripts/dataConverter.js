@@ -26,11 +26,11 @@ var convertFromClocToJSON = function(data) {
     });
     current.language = cols[0];
     current.size = parseInt(cols[4], 10);
+    current.comment = parseInt(cols[3],10);
   });
 
   json = getChildren(json)[0];
   json.name = 'root';
-
   return json;
 };
 
@@ -85,14 +85,14 @@ var convertFromWcToJSON = function(data) {
  */
 var getChildren = function(json) {
   var children = [];
-  if (json.isleaf) return children;
+  if (json.language) return children;
   for (var key in json) {
     var child = { name: key };
     if (json[key].size) {
       // value node
       child.size = json[key].size;
+      child.comment = json[key].comment;
       child.language = json[key].language;
-      child.isleaf = true;
     } else {
       // children node
       var childChildren = getChildren(json[key]);

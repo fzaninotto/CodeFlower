@@ -137,8 +137,8 @@ $ git ls-files | xargs wc -l > symfony.wc
         if (currentCodeFlower) currentCodeFlower.cleanup();
         // adapt layout size to the total number of elements
         var total = countElements(json);
-        w = parseInt(Math.sqrt(total) * 30, 10);
-        h = parseInt(Math.sqrt(total) * 30, 10);
+        w = parseInt(Math.sqrt(total) * 40, 10);
+        h = parseInt(Math.sqrt(total) * 40, 10);
         // create a new CodeFlower
         currentCodeFlower = new CodeFlower("#visualization", w, h).update(json);
       };
