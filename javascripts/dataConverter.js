@@ -1,6 +1,41 @@
 var convertToJSON = function(data, origin) {
-  return (origin == 'cloc') ? convertFromClocToJSON(data) : convertFromWcToJSON(data);
+  if (origin == 'cloc'){
+ 	return convertFromClocToJSON(data);
+  } else if(origin == 'scc'){
+	return convertFromSccToJSON(data);
+  } else{
+	return convertFromWcToJSON(data);
+  }
 };
+
+var convertFromSccToJSON = function(data) {
+  var lines = data.split("\n");
+  lines.shift(); // drop the header line
+
+  var json = {};
+  lines.forEach(function(line) {
+    var cols = line.split(',');
+    var filename = cols[1];
+    if (!filename) return;
+    var elements = filename.split(/[\/\\]/);
+    var current = json;
+    elements.forEach(function(element) {
+      if (!current[element]) {
+        current[element] = {};
+      }
+      current = current[element];
+    });
+    current.language = cols[0];
+    current.size = parseInt(cols[4], 10);
+    current.comment = parseInt(cols[5],10);
+    current.complexity = parseInt(cols[7],10);
+  });
+
+  json = getChildren(json)[0];
+  json.name = 'root';
+  return json;
+};
+
 
 /**
  * Convert the output of cloc in csv to JSON format

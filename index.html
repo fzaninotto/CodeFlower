@@ -88,6 +88,11 @@ myflower.update(jsonData);
         <h2>Generating JSON for a project</h2>
         <p>It's easy to generate loc metrics for any project, whatever the language. You can use <code>wc</code>, but this method requires cleaning the output and counts comments and blanks together with actual lines of code. Alternatively, you can use <code>cloc</code> (<a href="http://cloc.sourceforge.net/">http://cloc.sourceforge.net/</a>), which is open-source and makes the difference between real source code and comments. Here are three examples using <a href="http://github.com">GitHub</a> as a source.</p>
         <pre>
+#Get SCC (Sloc Cloc and Code)
+$ go get -u github.com/boyter/scc/
+#Using SCC (fast, accurate)
+$ scc . --by-file -f csv -o symfony.csv
+
 # Using curl and cloc (fast, accurate)
 $ curl https://nodeload.github.com/symfony/symfony/tar.gz/master | tar xvz
 $ cloc symfony-master --csv --by-file --report-file=symfony.cloc
@@ -100,12 +105,14 @@ $ cloc symfony --csv --by-file --report-file=symfony.cloc
 $ git clone git://github.com/symfony/symfony.git
 $ cd symfony
 $ git ls-files | xargs wc -l > symfony.wc
+
         </pre>
         <p>Once you have a loc metrics file, paste its content below and click on the convert button. This will update the CodeFlower and the JSON textarea, to let you save data for your own CodeFlowers.</p>
         <form id="jsonConverter">
         <fieldset>
           <select name="origin">
             <option value="cloc" selected>Origin: cloc</option>
+	          <option value="scc">Origin: scc</option>
             <option value="ws">Origin: wc</option>
           </select>
           <textarea id="metricsData"></textarea>
