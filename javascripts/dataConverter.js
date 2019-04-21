@@ -25,14 +25,16 @@ var convertFromSccToJSON = function(data) {
       }
       current = current[element];
     });
+    console.log(cols);
     current.language = cols[0];
-    current.size = parseInt(cols[4], 10);
+    current.size = parseInt(cols[3], 10);
     current.comment = parseInt(cols[5],10);
     current.complexity = parseInt(cols[7],10);
   });
 
   json = getChildren(json)[0];
   json.name = 'root';
+  console.log(json);
   return json;
 };
 
@@ -125,6 +127,7 @@ var getChildren = function(json) {
     var child = { name: key };
     if (json[key].size) {
       // value node
+      child.complexity = json[key].complexity;
       child.size = json[key].size;
       child.comment = json[key].comment;
       child.language = json[key].language;

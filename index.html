@@ -47,21 +47,17 @@ line.link {
           <fieldset>
           <label>Example projects from GitHub:</label>
           <select id="project">
-            <option value="data/uptime.json">fzaninotto / uptime</option>
-            <option value="data/faker.json">fzaninotto / faker</option>
-            <option value="data/jquery.json">jquery / jquery</option>
-            <option value="data/twig.json">fabpot / twig</option>
-            <option value="data/lichess.json">ornicar / lila</option>
-            <option value="data/propel2.json">propelorm / Propel2</option>
-            <option value="data/doctrine2.json">doctrine / doctrine2</option>
-            <option value="data/wordpress.json">WordPress / WordPress</option>
-            <option value="data/rails.json">rails / rails</option>
-            <option value="data/symfony.json">symfony / symfony (WARNING: will make your computer scream)</option>
-            <option value="data/zf2.json">zendframework / zf2 (WARNING: will make your computer scream
+            <option value="data/Codeflower.json">abstractxan / codeflower</option>
+            <option value="data/chat.json">abstractxan / Chit-Chat-GRPC</option>
+            <option value="data/Thats-all-codes.json">abstractxan / Thats-all-codes</option>
+            <option value="data/rails.json">rails / rails (WARNING: will make your computer scream
           </select>
           </fieldset>
         </form>
+        <h2> LOC and Comment count visualization</h2>
         <div id="visualization"></div>
+        <h2> Complexity Visualisation</h2> Works only for SCC input type <br>
+        <div id="visualization2"></div>
         <h2>Purpose</h2>
         <ul class="unstyled">
           <li>Did you ever dive into an existing project and wish you could have a bird's eye view of the whole code?</li>
@@ -91,7 +87,7 @@ myflower.update(jsonData);
 #Get SCC (Sloc Cloc and Code)
 $ go get -u github.com/boyter/scc/
 #Using SCC (fast, accurate)
-$ scc . --by-file -f csv -o symfony.csv
+$ scc symfony/ --by-file -f csv -o symfony.csv
 
 # Using curl and cloc (fast, accurate)
 $ curl https://nodeload.github.com/symfony/symfony/tar.gz/master | tar xvz
@@ -134,6 +130,7 @@ $ git ls-files | xargs wc -l > symfony.wc
     <script type="text/javascript" src="javascripts/d3/d3.geom.js"></script>
     <script type="text/javascript" src="javascripts/d3/d3.layout.js"></script>
     <script type="text/javascript" src="javascripts/CodeFlower.js"></script>
+    <script type="text/javascript" src="javascripts/ComplexFlower.js"></script>
     <script type="text/javascript" src="javascripts/dataConverter.js"></script>
     <script type="text/javascript">
       var currentCodeFlower;
@@ -168,6 +165,41 @@ $ git ls-files | xargs wc -l > symfony.wc
         var json = convertToJSON(data, origin);
         document.getElementById('visualization').scrollIntoView();
         createCodeFlower(json);
+      });
+    </script>
+    <script type="text/javascript">
+      var currentComplexFlower;
+      var createComplexFlower = function(json) {
+        // update the jsonData textarea
+        document.getElementById('jsonData').value = JSON.stringify(json);
+        // remove previous flower to save memory
+        if (currentComplexFlower) currentComplexFlower.cleanup();
+        // adapt layout size to the total number of elements
+        var total = countElements(json);
+        w = parseInt(Math.sqrt(total) * 40, 10);
+        h = parseInt(Math.sqrt(total) * 40, 10);
+        // create a new ComplexFlower
+        currentComplexFlower = new ComplexFlower("#visualization2", w, h).update(json);
+      };
+
+      d3.json('data.json', createComplexFlower);
+
+      document.getElementById('project').addEventListener('change', function() {
+        d3.json(this.value, createComplexFlower);
+      });
+      document.getElementById('jsonInput').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('visualization').scrollIntoView();
+        var json = JSON.parse(document.getElementById('jsonData').value);
+        currentComplexFlower.update(json);
+      });
+      document.getElementById('jsonConverter').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var origin = this.children[0].children[0].value;
+        var data = this.children[0].children[1].value;
+        var json = convertToJSON(data, origin);
+        document.getElementById('visualization').scrollIntoView();
+        createComplexFlower(json);
       });
     </script>
   </body>
