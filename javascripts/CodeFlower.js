@@ -1,35 +1,67 @@
-var CodeFlower = function(selector, w, h) {
-  this.w = w;
-  this.h = h;
+import * as d3 from "d3";
+
+export default class CodeFlower{
+  constructor(selector, w, h)
+  {
+    this.w = w;
+    this.h = h;
 
   d3.select(selector).selectAll("svg").remove();
 
   this.svg = d3.select(selector).append("svg:svg")
     .attr('width', w)
-    .attr('height', h);
+    .attr('height', h)
+      .attr('id', 'image-id');
+
 
   this.svg.append("svg:rect")
     .style("stroke", "#999")
-    .style("fill", "#fff")
+    .style("fill", "#a6a6a6")
     .attr('width', w)
     .attr('height', h);
 
   this.force = d3.layout.force()
     .on("tick", this.tick.bind(this))
-    .charge(function(d) { return d._children ? -d.size / 100 : -40; })
-    .linkDistance(function(d) { return d.target._children ? 80 : 25; })
+    .charge(function(d) { return d._children ? -d.size / 100 : -100; })
+    .linkDistance(function(d) { return d.target._children ? 80 : 75; })
     .size([h, w]);
-};
+    }
 
-CodeFlower.prototype.update = function(json) {
+update = function(json) {
   if (json) this.json = json;
+  var selector = "#visualization";
+    var w = 1000;
+    var h = 1000;
+
+  d3.select(selector).selectAll("svg").remove();
+
+  this.svg = d3.select(selector).append("svg:svg")
+    .attr('width', w)
+    .attr('height', h)
+      .attr('id', 'image-id');
+
+
+  this.svg.append("svg:rect")
+    .style("stroke", "#999")
+    .style("fill", "#a6a6a6")
+    .attr('width', w)
+    .attr('height', h);
+
+  this.force = d3.layout.force()
+    .on("tick", this.tick.bind(this))
+    .charge(function(d) { return d._children ? -d.size / 100 : -100; })
+    .linkDistance(function(d) { return d.target._children ? 80 : 75; })
+    .size([h, w]);
 
   this.json.fixed = true;
   this.json.x = this.w / 2;
   this.json.y = this.h / 2;
 
   var nodes = this.flatten(this.json);
+
   var links = d3.layout.tree().links(nodes);
+  console.log("LINKS: ", links);
+
   var total = nodes.length || 1;
 
   // remove existing text (will readd it afterwards to be sure it's on top)
@@ -55,7 +87,7 @@ CodeFlower.prototype.update = function(json) {
     .attr("y2", function(d) { return d.target.y; });
 
   // Exit any old links.
-  this.link.exit().remove();
+   this.link.exit().remove();
 
   // Update the nodes
   this.node = this.svg.selectAll("circle.node")
@@ -90,7 +122,7 @@ CodeFlower.prototype.update = function(json) {
   return this;
 };
 
-CodeFlower.prototype.flatten = function(root) {
+flatten = function(root) {
   var nodes = [], i = 0;
 
   function recurse(node) {
@@ -107,9 +139,9 @@ CodeFlower.prototype.flatten = function(root) {
   root.size = recurse(root);
   return nodes;
 };
-
-CodeFlower.prototype.click = function(d) {
+click = function(d) {
   // Toggle children on click.
+
   if (d.children) {
     d._children = d.children;
     d.children = null;
@@ -120,17 +152,19 @@ CodeFlower.prototype.click = function(d) {
   this.update();
 };
 
-CodeFlower.prototype.mouseover = function(d) {
+mouseover = function(d) {
   this.text.attr('transform', 'translate(' + d.x + ',' + (d.y - 5 - (d.children ? 3.5 : Math.sqrt(d.size) / 2)) + ')')
-    .text(d.name + ": " + d.size + " loc")
+    .text(this.leafNode(d))
     .style('display', null);
 };
 
-CodeFlower.prototype.mouseout = function(d) {
+leafNode(d){if(d.children){return d.label + ": " + Math.round(d.size) + " rows"} else {return d.label}}
+
+mouseout = function(d) {
   this.text.style('display', 'none');
 };
 
-CodeFlower.prototype.tick = function() {
+tick = function() {
   var h = this.h;
   var w = this.w;
   this.link.attr("x1", function(d) { return d.source.x; })
@@ -143,7 +177,9 @@ CodeFlower.prototype.tick = function() {
   });
 };
 
-CodeFlower.prototype.cleanup = function() {
+cleanup = function() {
   this.update([]);
   this.force.stop();
 };
+
+}
