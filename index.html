@@ -73,7 +73,7 @@ line.link {
         <p>To create a CodeFlower, include the <code>CodeFlower.js</code> file together with <code>d3.js</code>, just like in this page. Create a new CodeFlower instance using a CSS selector (of the div where the flower should be inserted), and the width and height of the desired visualization. Then, bind JSON data to the flower using <code>CodeFlower.update()</code>, and you're done.</p>
         <pre>
 var myFlower = new CodeFlower("#visualization", 300, 200);
-myflower.update(jsonData);
+myFlower.update(jsonData);
         </pre>
         <h2>Input data format</h2>
         <p>The <code>jsonData</code> format taken as input to <code>update()</code> is extremely simple. It's a JavaScript object representing a file tree structure. Each node must have a <code>name</code> (the file or directory name), leaf nodes must have a <code>size</code> (the number of lines of code or the file), and directory nodes must have a <code>children</code> property containing an array of nodes. As an example, here is the input for the currently displayed CodeFlower. You can modify it at will and click the update button to see the effect of your changes on the CodeFlower.</p>
