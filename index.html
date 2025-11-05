@@ -157,7 +157,7 @@ $ git ls-files | xargs wc -l > symfony.wc
       document.getElementById('jsonConverter').addEventListener('submit', function(e) {
         e.preventDefault();
         var origin = this.children[0].children[0].value;
-        var data = this.children[0].children[1].value;
+        var data = this.children[0].children[2].value;
         var json = convertToJSON(data, origin);
         document.getElementById('visualization').scrollIntoView();
         createCodeFlower(json);
