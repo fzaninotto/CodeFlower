@@ -9,8 +9,6 @@ var CodeFlower = function(selector, w, h) {
     .attr('height', h);
 
   this.svg.append("svg:rect")
-    .style("stroke", "#999")
-    .style("fill", "#fff")
     .attr('width', w)
     .attr('height', h);
 
@@ -52,7 +50,10 @@ CodeFlower.prototype.update = function(json) {
     .attr("x1", function(d) { return d.source.x; })
     .attr("y1", function(d) { return d.source.y; })
     .attr("x2", function(d) { return d.target.x; })
-    .attr("y2", function(d) { return d.target.y; });
+    .attr("y2", function(d) { return d.target.y; })
+    .style("stroke", function color(d) {
+      return "hsl(" + parseInt(360 / total * d.source.id, 10) + ",90%,64%)";
+    });
 
   // Exit any old links.
   this.link.exit().remove();
@@ -70,6 +71,9 @@ CodeFlower.prototype.update = function(json) {
     .attr("class", "node")
     .classed('directory', function(d) { return (d._children || d.children) ? 1 : 0; })
     .attr("r", function(d) { return d.children ? 3.5 : Math.pow(d.size, 2/5) || 1; })
+    .style("stroke", function color(d) {
+      return "hsl(" + parseInt(360 / total * d.id, 10) + ",90%,72%)";
+    })
     .style("fill", function color(d) {
       return "hsl(" + parseInt(360 / total * d.id, 10) + ",90%,70%)";
     })
