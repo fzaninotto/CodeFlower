@@ -85,13 +85,14 @@ var convertFromWcToJSON = function(data) {
  */
 var getChildren = function(json) {
   var children = [];
-  if (json.language) return children;
+  if (json.isleaf) return children;
   for (var key in json) {
     var child = { name: key };
     if (json[key].size) {
       // value node
       child.size = json[key].size;
       child.language = json[key].language;
+      child.isleaf = true;
     } else {
       // children node
       var childChildren = getChildren(json[key]);
